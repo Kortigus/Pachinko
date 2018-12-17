@@ -16,7 +16,7 @@ void playSlots(int slot[], size_t n)
 }
 
 /* Gets the amount the player wants to bet and stores it into bet */
-insertCoin(size_t* bet, size_t* credits)
+int insertCoin(size_t* bet, size_t* credits)
 {
 	char line[LINESIZE];
 	*bet = 0;
@@ -29,9 +29,14 @@ insertCoin(size_t* bet, size_t* credits)
 			printf("Error reading line");
 			return 1;
 		}
-		if (sscanf_s(line, "%d", bet) == 1 && *bet >= MINIMUM && *bet <= *credits)
+		if (sscanf_s(line, "%d", bet) != 1)
 		{
-			return;
+			printf("%s", "Error reading for bet, exiting game");
+			return 0;
+		}
+		if (*bet >= MINIMUM && *bet <= *credits)
+		{
+			return 1;
 		}
 		else if (*bet > *credits)
 		{
@@ -113,7 +118,10 @@ int main(void)
 			exit(1);
 		}
 		printf("%s %d %s\n", "You have ", credits, " Credits");
-		insertCoin(&bet, &credits);
+		if (insertCoin(&bet, &credits) != 1)
+		{
+			return 1;
+		}
 		playSlots(slot, 3);
 		payOut(slot, &credits, &bet);
 	}
